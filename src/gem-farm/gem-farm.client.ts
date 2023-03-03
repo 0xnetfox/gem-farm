@@ -10,7 +10,7 @@ import {
   TransactionInstruction,
 } from '@solana/web3.js';
 import { GemFarm } from '../types/gem_farm';
-import { isKp } from '../gem-common';
+import {getPkOf, isKp} from '../gem-common';
 import {
   findGdrPDA,
   findGemBoxPDA,
@@ -250,11 +250,9 @@ export class GemFarmClient extends GemBankClient {
       )
       .accounts({
         farm: farm.publicKey,
-        farmManager: isKp(farmManager)
-          ? (<Keypair>farmManager).publicKey
-          : farmManager,
+        farmManager: getPkOf(farmManager),
         farmAuthority: farmAuth,
-        payer: isKp(payer) ? (<Keypair>payer).publicKey : farmManager,
+        payer: getPkOf(payer),
         feeAcc: feeAccount,
         rewardAPot,
         rewardAMint,
@@ -297,9 +295,7 @@ export class GemFarmClient extends GemBankClient {
       .updateFarm(config, newManager, maxCounts ?? null)
       .accounts({
         farm,
-        farmManager: isKp(farmManager)
-          ? (<Keypair>farmManager).publicKey
-          : farmManager,
+        farmManager: getPkOf(farmManager),
       })
       .signers(signers)
       .rpc();
@@ -324,9 +320,7 @@ export class GemFarmClient extends GemBankClient {
       .payoutFromTreasury(farmAuthBump, farmTreasuryBump, lamports)
       .accounts({
         farm,
-        farmManager: isKp(farmManager)
-          ? (<Keypair>farmManager).publicKey
-          : farmManager,
+        farmManager: getPkOf(farmManager),
         farmAuthority: farmAuth,
         farmTreasury,
         destination,
@@ -366,9 +360,7 @@ export class GemFarmClient extends GemBankClient {
       .addToBankWhitelist(farmAuthBump, whitelistType)
       .accounts({
         farm,
-        farmManager: isKp(farmManager)
-          ? (<Keypair>farmManager).publicKey
-          : farmManager,
+        farmManager: getPkOf(farmManager),
         farmAuthority: farmAuth,
         bank: farmAcc.bank,
         addressToWhitelist,
@@ -409,9 +401,7 @@ export class GemFarmClient extends GemBankClient {
       .removeFromBankWhitelist(farmAuthBump, whitelistProofBump)
       .accounts({
         farm,
-        farmManager: isKp(farmManager)
-          ? (<Keypair>farmManager).publicKey
-          : farmManager,
+        farmManager: getPkOf(farmManager),
         farmAuthority: farmAuth,
         bank: farmAcc.bank,
         addressToRemove,
@@ -486,7 +476,7 @@ export class GemFarmClient extends GemBankClient {
         farm,
         farmer,
         identity: identityPk,
-        payer: isKp(payer) ? (<Keypair>payer).publicKey : payer,
+        payer: getPkOf(payer),
         feeAcc: feeAccount,
         bank: farmAcc.bank,
         vault,
@@ -997,9 +987,7 @@ export class GemFarmClient extends GemBankClient {
         .deauthorizeFunder(authorizationProofBump)
         .accounts({
           farm,
-          farmManager: isKp(farmManager)
-            ? (<Keypair>farmManager).publicKey
-            : farmManager,
+          farmManager: getPkOf(farmManager),
           funderToDeauthorize: funder,
           authorizationProof,
           systemProgram: SystemProgram.programId,
@@ -1012,9 +1000,7 @@ export class GemFarmClient extends GemBankClient {
         .authorizeFunder()
         .accounts({
           farm,
-          farmManager: isKp(farmManager)
-            ? (<Keypair>farmManager).publicKey
-            : farmManager,
+          farmManager: getPkOf(farmManager),
           funderToAuthorize: funder,
           authorizationProof,
           systemProgram: SystemProgram.programId,
@@ -1113,9 +1099,7 @@ export class GemFarmClient extends GemBankClient {
       .cancelReward(farmAuthBump, potBump)
       .accounts({
         farm,
-        farmManager: isKp(farmManager)
-          ? (<Keypair>farmManager).publicKey
-          : farmManager,
+        farmManager: getPkOf(farmManager),
         farmAuthority: farmAuth,
         rewardPot: pot,
         rewardDestination,
@@ -1151,9 +1135,7 @@ export class GemFarmClient extends GemBankClient {
       .lockReward()
       .accounts({
         farm,
-        farmManager: isKp(farmManager)
-          ? (<Keypair>farmManager).publicKey
-          : farmManager,
+        farmManager: getPkOf(farmManager),
         rewardMint,
       })
       .signers(signers)
@@ -1202,9 +1184,7 @@ export class GemFarmClient extends GemBankClient {
       .addRaritiesToBank(farmAuthBump, completeRarityConfigs)
       .accounts({
         farm,
-        farmManager: isKp(farmManager)
-          ? (<Keypair>farmManager).publicKey
-          : farmManager,
+        farmManager: getPkOf(farmManager),
         farmAuthority: farmAuth,
         bank,
         gemBank: this.bankProgram.programId,

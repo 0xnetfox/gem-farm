@@ -11,7 +11,7 @@ import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
-import { AccountUtils, isKp } from '../gem-common';
+import {AccountUtils, getPkOf, isKp} from '../gem-common';
 import { GemBank } from '../types/gem_bank';
 import {
   findGdrPDA,
@@ -200,10 +200,8 @@ export class GemBankClient extends AccountUtils {
       .initBank()
       .accounts({
         bank: bank.publicKey,
-        bankManager: isKp(bankManager)
-          ? (<Keypair>bankManager).publicKey
-          : bankManager,
-        payer: isKp(payer) ? (<Keypair>payer).publicKey : payer,
+        bankManager: getPkOf(bankManager),
+        payer: getPkOf(payer),
         systemProgram: SystemProgram.programId,
       })
       .signers(signers)
@@ -225,9 +223,7 @@ export class GemBankClient extends AccountUtils {
       .updateBankManager(newManager)
       .accounts({
         bank,
-        bankManager: isKp(bankManager)
-          ? (<Keypair>bankManager).publicKey
-          : bankManager,
+        bankManager: getPkOf(bankManager)
       })
       .signers(signers)
       .rpc();
@@ -260,7 +256,7 @@ export class GemBankClient extends AccountUtils {
         bank,
         vault,
         creator: creatorPk,
-        payer: isKp(payer) ? (<Keypair>payer).publicKey : <PublicKey>payer,
+        payer: getPkOf(payer),
         systemProgram: SystemProgram.programId,
       })
       .signers(signers)
@@ -284,9 +280,7 @@ export class GemBankClient extends AccountUtils {
       .accounts({
         bank,
         vault,
-        owner: isKp(existingOwner)
-          ? (<Keypair>existingOwner).publicKey
-          : existingOwner,
+        owner: getPkOf(existingOwner),
       })
       .signers(signers)
       .rpc();
@@ -309,9 +303,7 @@ export class GemBankClient extends AccountUtils {
       .accounts({
         bank,
         vault,
-        bankManager: isKp(bankManager)
-          ? (<Keypair>bankManager).publicKey
-          : bankManager,
+        bankManager: getPkOf(bankManager),
       })
       .signers(signers)
       .rpc();
@@ -332,9 +324,7 @@ export class GemBankClient extends AccountUtils {
       .setBankFlags(flags)
       .accounts({
         bank,
-        bankManager: bankManager
-          ? (<Keypair>bankManager).publicKey
-          : bankManager,
+        bankManager: getPkOf(bankManager),
       })
       .signers(signers)
       .rpc();
@@ -478,7 +468,7 @@ export class GemBankClient extends AccountUtils {
       .accounts({
         bank,
         vault,
-        owner: isKp(vaultOwner) ? (<Keypair>vaultOwner).publicKey : vaultOwner,
+        owner: getPkOf(vaultOwner),
         authority: vaultAuth,
         gemBox,
         gemDepositReceipt: GDR,
@@ -576,7 +566,7 @@ export class GemBankClient extends AccountUtils {
       .accounts({
         bank,
         vault,
-        owner: isKp(vaultOwner) ? (<Keypair>vaultOwner).publicKey : vaultOwner,
+        owner: getPkOf(vaultOwner),
         authority: vaultAuth,
         gemBox,
         gemDepositReceipt: GDR,
@@ -741,7 +731,7 @@ export class GemBankClient extends AccountUtils {
       .accounts({
         bank,
         vault,
-        owner: isKp(vaultOwner) ? (<Keypair>vaultOwner).publicKey : vaultOwner,
+        owner: getPkOf(vaultOwner),
         authority: vaultAuth,
         gemBox,
         gemDepositReceipt: GDR,
@@ -831,7 +821,7 @@ export class GemBankClient extends AccountUtils {
       .accounts({
         bank,
         vault,
-        owner: isKp(vaultOwner) ? (<Keypair>vaultOwner).publicKey : vaultOwner,
+        owner: getPkOf(vaultOwner),
         authority: vaultAuth,
         gemBox,
         gemDepositReceipt: GDR,
@@ -977,7 +967,7 @@ export class GemBankClient extends AccountUtils {
       .accounts({
         bank,
         vault,
-        owner: isKp(vaultOwner) ? (<Keypair>vaultOwner).publicKey : vaultOwner,
+        owner: getPkOf(vaultOwner),
         authority: vaultAuth,
         recipientAta,
         vaultAta,
