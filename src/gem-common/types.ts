@@ -41,8 +41,14 @@ export function stringToBytes(str: string) {
   return myBuffer;
 }
 
-export function isKp(toCheck: PublicKey | Keypair) {
+export function isKp(toCheck: PublicKey | Keypair): boolean {
   return typeof (<Keypair>toCheck).publicKey !== 'undefined';
+}
+
+export function getPkOf(obj: Keypair | PublicKey): PublicKey {
+  return isKp(obj)
+      ? (obj as Keypair).publicKey
+      : obj as PublicKey;
 }
 
 export function isPk(obj: any): boolean {
