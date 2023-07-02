@@ -611,42 +611,21 @@ export class GemFarmClient extends GemBankClient {
     rewardAMint: PublicKey,
     rewardBMint: PublicKey
   ) {
-    const identityPk = isKp(farmerIdentity)
-      ? (<Keypair>farmerIdentity).publicKey
-      : <PublicKey>farmerIdentity;
+    const {
+      farmAuth,
+      farmAuthBump,
+      farmer,
+      farmerBump,
+      potA,
+      potABump,
+      potB,
+      potBBump,
+      rewardADestination,
+      rewardBDestination,
+      builder
+    } = await this.buildClaim(farm, farmerIdentity, rewardAMint, rewardBMint);
 
-    const [farmAuth, farmAuthBump] = await findFarmAuthorityPDA(farm);
-    const [farmer, farmerBump] = await findFarmerPDA(farm, identityPk);
-
-    const [potA, potABump] = await findRewardsPotPDA(farm, rewardAMint);
-    const [potB, potBBump] = await findRewardsPotPDA(farm, rewardBMint);
-
-    const rewardADestination = await this.findATA(rewardAMint, identityPk);
-    const rewardBDestination = await this.findATA(rewardBMint, identityPk);
-
-    const signers = [];
-    if (isKp(farmerIdentity)) signers.push(<Keypair>farmerIdentity);
-
-    const txSig = await this.farmProgram.methods
-      .claim(farmAuthBump, farmerBump, potABump, potBBump)
-      .accounts({
-        farm,
-        farmAuthority: farmAuth,
-        farmer,
-        identity: identityPk,
-        rewardAPot: potA,
-        rewardAMint,
-        rewardADestination,
-        rewardBPot: potB,
-        rewardBMint,
-        rewardBDestination,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers(signers)
-      .rpc();
+    const txSig = await builder.rpc();
 
     return {
       farmAuth,
@@ -661,6 +640,63 @@ export class GemFarmClient extends GemBankClient {
       rewardBDestination,
       txSig,
     };
+  }
+
+  async buildClaim(
+    farm: PublicKey,
+    farmerIdentity: PublicKey | Keypair,
+    rewardAMint: PublicKey,
+    rewardBMint: PublicKey
+  ) {
+  const identityPk = isKp(farmerIdentity)
+        ? (<Keypair>farmerIdentity).publicKey
+        : <PublicKey>farmerIdentity;
+
+    const [farmAuth, farmAuthBump] = await findFarmAuthorityPDA(farm);
+    const [farmer, farmerBump] = await findFarmerPDA(farm, identityPk);
+
+    const [potA, potABump] = await findRewardsPotPDA(farm, rewardAMint);
+    const [potB, potBBump] = await findRewardsPotPDA(farm, rewardBMint);
+
+    const rewardADestination = await this.findATA(rewardAMint, identityPk);
+    const rewardBDestination = await this.findATA(rewardBMint, identityPk);
+
+    const signers = [];
+    if (isKp(farmerIdentity)) signers.push(<Keypair>farmerIdentity);
+
+    const builder = await this.farmProgram.methods
+        .claim(farmAuthBump, farmerBump, potABump, potBBump)
+        .accounts({
+          farm,
+          farmAuthority: farmAuth,
+          farmer,
+          identity: identityPk,
+          rewardAPot: potA,
+          rewardAMint,
+          rewardADestination,
+          rewardBPot: potB,
+          rewardBMint,
+          rewardBDestination,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+          systemProgram: SystemProgram.programId,
+          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+        })
+        .signers(signers);
+
+    return {
+      farmAuth,
+      farmAuthBump,
+      farmer,
+      farmerBump,
+      potA,
+      potABump,
+      potB,
+      potBBump,
+      rewardADestination,
+      rewardBDestination,
+      builder,
+    }
   }
 
   async flashDeposit(
